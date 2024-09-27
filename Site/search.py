@@ -189,11 +189,9 @@ def search_with_TFIDF(user_query, query_string, exact_match=False):
 
 
 # Sentence Bert
-# model = SentenceTransformer("all-MiniLM-L6-v2")
-# model.save(path="all-MiniLM-L6-v2")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Load Sentence-BERT model
-model = SentenceTransformer("Site/all-MiniLM-L6-v2")
-
+model = SentenceTransformer("Site/all-MiniLM-L6-v2", device=device)
 # Flatten the list of lists into a single list of sentences
 all_sentences = [sentence for document in documents_lists for sentence in document]
 
@@ -202,7 +200,7 @@ all_sentences = [sentence for document in documents_lists for sentence in docume
 file_path = "Site/all-MiniLM-L6-v2/sentence_embeddings.pt"
 
 if os.path.exists(file_path):
-    sentence_embeddings = torch.load(file_path)
+    sentence_embeddings = torch.load(file_path, map_location=device)
 else: # if the file doesn't exist, then compute
     sentence_embeddings = model.encode(all_sentences, convert_to_tensor=True)
     torch.save(sentence_embeddings, "Site/all-MiniLM-L6-v2/sentence_embeddings.pt")
